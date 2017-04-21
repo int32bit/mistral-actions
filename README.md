@@ -2,10 +2,21 @@
 
 ### How to run ?
 
+For the impatient:
+
+```sh
+git clone https://github.com/int32bit/mistral-actions.git
+cd mistral-actions
+python setup.py install
+python register_actions.py --config-file /etc/mistral/mistral.conf
+systemctl restart openstack-mistral-engine openstack-mistral-executor
+```
+
 #### 1. Clone this project to your mistral api node
 
 ```sh
 git clone https://github.com/int32bit/mistral-actions.git
+cd mistral-actions
 ```
 
 #### 2. Install
@@ -20,10 +31,10 @@ sudo python setup.py install
 python register_actions.py --config-file /etc/mistral/mistral.conf
 ```
 
-#### 4. Check actions
+#### 4. Restart mistral services
 
 ```sh
-mistral action-list
+systemctl restart openstack-mistral-engine openstack-mistral-executor
 ```
 
 #### 5. Run action
@@ -52,18 +63,21 @@ class RunnerAction(base.Action):
         return {'status': 0}
 ```
 
-You just need add a `__export__` attribute to tell us to publish the class, and you don't need change setup.cfg.
+You just need add a `__export__` attribute to tell us to publish the class, and you don't need change `setup.cfg`.
 
-It's better to run `tox -e pep8` to ensure your code in pep8 style.
+You can use `format_code.sh` script to format your code to pep8 style. It's better to run `tox -e pep8` to ensure your code in pep8 style.
 
 ```
+./format_code.sh
 tox -e pep8
 ```
 
-Register your actions using our script:
+Register your actions and restart mistral services:
 
 ```
+python setup.py install
 python register_actions.py --config-file /etc/mistral/mistral.conf
+systemctl restart openstack-mistral-engine openstack-mistral-executor
 ```
 
 Now you can call the action example.runner
