@@ -1,5 +1,9 @@
 ## OpenStack Mistal Actions
 
+Mistral is the OpenStack workflow service. This project aims to provide a mechanism to define tasks and workflows without writing code, manage and execute them in the cloud environment.
+
+Mistral allow user write a new custom action, but must reinstall Mistral if it was installed in system(ref: https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html), it's hardly acceptable for production environment. This project aims to provide a simple tool to auto-discover new actions, and register it without effecting environment. This project also collect some extra useful actions which don't exist in standard action list.
+
 ### How to run ?
 
 For the impatient:
@@ -91,9 +95,7 @@ systemctl restart openstack-mistral-engine openstack-mistral-executor
 
 Now you can call the action example.runner
 
-```
-$ mistral-db-manage --config-file <path-to-config> populate
-Now you can call the action example.runner
+```yaml
 my_workflow:
   tasks:
     my_action_task:
@@ -117,3 +119,8 @@ MIT
 ### Contributors
 
 * int32bit
+
+### References
+
+1. [Mistral’s developer documentation](https://docs.openstack.org/developer/mistral/)
+2. [How to write a Custom Action](https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html)
