@@ -45,6 +45,15 @@ Once you succeed to register actions, you can use it in your workflow or directl
 mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"ef7ee146-1c27-448f-b948-d8821c59ec51"}'
 ```
 
+### Action Catalog
+
+| name | input | description |
+|----|----|----|
+| systems.ExecAction | cmd  |Run command with arguments and return its output as a byte string. Note you can use at most one pipe, like 'ls -l | wc -l'.|
+| nova.servers.ServerAssertStatus|server, status='ACTIVE'|Assert a server in special status.|
+|...|...|...|
+
+
 ### How to write new action ?
 
 Write a class inherited from mistral.actions.base.Action in `mistral_actions` directory:
