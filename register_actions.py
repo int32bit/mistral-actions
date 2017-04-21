@@ -56,7 +56,9 @@ def clear_actions():
 
 def register_actions():
     actions = extract_all_actions()
+    print("\nRegister follow actions: ")
     for action in actions:
+        print('\t' + action['name'])
         register_action_class(**action)
 
 
