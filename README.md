@@ -53,6 +53,10 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"e
 
 | name | input | description |
 |----|----|----|
+|int32bit.cinder.snapshots.assert_status|(snapshot_id, status="available")|Assert a volume snapshot in special status.|
+|int32bit.cinder.volumes.assert_status|(volume_id, status="available")|Assert a volume in special status.|
+|int32bit.glance.images.assert_status|(image_id, status="active")|Assert a image in special status.|
+|int32bit.glance.images.filter_by|(**kwargs)|List image filtered by id, name, status, etc.|
 |int32bit.nova.servers.assert_status|(server, status="ACTIVE")|Assert a server in special status.|
 |int32bit.system.exec|(cmd)|Run command with arguments and return its output as a byte string.|
 
