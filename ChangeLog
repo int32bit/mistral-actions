@@ -1,8 +1,13 @@
 CHANGES
 =======
 
-* Add todo list
+* Standardize the action name
 * Update README.md
-* Add Chinese doc
-* Update document
-* init repo
+* Add action catalog to README.md
+* Update README.md
+* Add 'exec' action
+* Add update script
+* Add actions register report
+* Add README doc
+* Add server_assert_status action to ensure server in special status
+* Initialise project skeleton

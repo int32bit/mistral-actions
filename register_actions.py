@@ -112,10 +112,10 @@ def main():
 
     CONF(project='mistral')
     # CONF.command.func(config, CONF.command.name)
-    # sync_db()
+    sync_db()
     dump()
-    dump_as_list()
-    dump_as_md_table()
+    # dump_as_list()
+    # dump_as_md_table()
 
 
 if __name__ == '__main__':
