@@ -14,5 +14,4 @@ class Base(action_base):
         return glanceclient.Client(
             glance_endpoint.url,
             region_name=glance_endpoint.region,
-            token=ctx.auth_token
-        )
+            token=ctx.auth_token)

@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add image status assert support
 * Standardize the action name
 * Update README.md
 * Add action catalog to README.md
