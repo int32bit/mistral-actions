@@ -53,10 +53,8 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"e
 
 | name | input | description |
 |----|----|----|
-| systems.ExecAction | cmd  |Run command with arguments and return its output as a byte string. Note you can use at most one pipe, like 'ls -l | wc -l'.|
-| nova.servers.ServerAssertStatus|server, status='ACTIVE'|Assert a server in special status.|
-|...|...|...|
-
+|int32bit.nova.servers.assert_status|(server, status="ACTIVE")|Assert a server in special status.|
+|int32bit.system.exec|(cmd)|Run command with arguments and return its output as a byte string.|
 
 ### How to write new action ?
 

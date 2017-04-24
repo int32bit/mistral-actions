@@ -1,7 +1,7 @@
 from mistral_actions.nova.base import Base
 
 
-class ServerAssertStatus(Base):
+class AssertStatus(Base):
     """Assert a server in special status.
 
     :param server: the server to check.
@@ -10,7 +10,7 @@ class ServerAssertStatus(Base):
     __export__ = True
 
     def __init__(self, server, status='ACTIVE'):
-        super(ServerAssertStatus, self).__init__()
+        super(AssertStatus, self).__init__()
         self.server = server
         self.status = status
 

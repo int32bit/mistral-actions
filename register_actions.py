@@ -11,8 +11,10 @@ from mistral.services.action_manager import register_action_class
 from mistral.utils import inspect_utils as i_utils
 
 import mistral_actions
+import mistral_actions.utils as utils
 
 CONF = cfg.CONF
+ROOT_NAMESPACE = 'int32bit'
 
 
 def extract_actions_from_module(module):
@@ -22,7 +24,10 @@ def extract_actions_from_module(module):
                 member[1], '__export__') and hasattr(member[1], 'run'):
             action = {}
             cls = member[1]
-            action['name'] = cls.__module__ + '.' + cls.__name__
+            module_name = cls.__module__
+            action['name'] = (ROOT_NAMESPACE +
+                              module_name[module_name.index('.'):] + '.'
+                              + utils.convert_to_snake_case(cls.__name__))
             action['action_class_str'] = cls.__module__ + '.' + cls.__name__
             action['attributes'] = i_utils.get_public_fields(cls)
             action['description'] = i_utils.get_docstring(cls)
@@ -69,6 +74,33 @@ def sync_db():
         register_actions()
 
 
+def dump():
+    # Order by name asc
+    actions = extract_all_actions()
+    fileds = ['name', 'input_str', 'description']
+    utils.print_list(actions, fileds, sortby_index=0)
+
+
+def dump_as_list():
+    sorted_actions = sorted(extract_all_actions(), key=lambda a: a['name'])
+    for action in sorted_actions:
+        print("%(name)s(%(args)s): %(desc)s" %
+              {'name': action['name'],
+               'args': action['input_str'],
+               'desc': action['description'].split('\n')[0]})
+
+
+def dump_as_md_table():
+    sorted_actions = sorted(extract_all_actions(), key=lambda a: a['name'])
+    print('| name | input | description |')
+    print('|----|----|----|')
+    for action in sorted_actions:
+        print("|%(name)s|(%(args)s)|%(desc)s|" %
+              {'name': action['name'],
+               'args': action['input_str'],
+               'desc': action['description'].split('\n')[0]})
+
+
 def main():
     config = alembic_cfg.Config(
         os.path.join(os.path.dirname(__file__), 'alembic.ini'))
@@ -80,7 +112,10 @@ def main():
 
     CONF(project='mistral')
     # CONF.command.func(config, CONF.command.name)
-    sync_db()
+    # sync_db()
+    dump()
+    dump_as_list()
+    dump_as_md_table()
 
 
 if __name__ == '__main__':

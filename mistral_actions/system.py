@@ -3,7 +3,7 @@ import shlex
 import subprocess
 
 
-class ExecAction(action_base):
+class Exec(action_base):
     """Run command with arguments and return its output as a byte string.
 
     :param cmd: the command to run, note you can use at most one pipe,
