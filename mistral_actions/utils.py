@@ -27,8 +27,8 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
                 data = o[field]
                 if data is None:
                     data = '-'
-                # '\r' would break the table, so remove it.
                 data = data.split('\n')[0]
+                # '\r' would break the table, so remove it.
                 data = six.text_type(data).replace("\r", "")
                 row.append(data)
         pt.add_row(row)
