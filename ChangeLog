@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Fix comment in wrong place
+* Add list images by query filters
 * Add image status assert support
 * Standardize the action name
 * Update README.md
