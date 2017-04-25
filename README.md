@@ -51,14 +51,16 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"e
 
 ### Action Catalog
 
-| name | input | description |
-|----|----|----|
-|int32bit.cinder.snapshots.assert_status|(snapshot_id, status="available")|Assert a volume snapshot in special status.|
-|int32bit.cinder.volumes.assert_status|(volume_id, status="available")|Assert a volume in special status.|
-|int32bit.glance.images.assert_status|(image_id, status="active")|Assert a image in special status.|
-|int32bit.glance.images.filter_by|(**kwargs)|List image filtered by id, name, status, etc.|
-|int32bit.nova.servers.assert_status|(server, status="ACTIVE")|Assert a server in special status.|
-|int32bit.system.exec|(cmd)|Run command with arguments and return its output as a byte string.|
+|name|input_str|description|
+|---|---|---|
+|int32bit.cinder.backups.assert_status|backup_id, status="available"|Assert a volume backup in special status.|
+|int32bit.cinder.backups.create|volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true|Creates a volume backup.|
+|int32bit.cinder.snapshots.assert_status|snapshot_id, status="available"|Assert a volume snapshot in special status.|
+|int32bit.cinder.volumes.assert_status|volume_id, status="available"|Assert a volume in special status.|
+|int32bit.glance.images.assert_status|image_id, status="active"|Assert a image in special status.|
+|int32bit.glance.images.filter_by|**kwargs|List image filtered by id, name, status, etc.|
+|int32bit.nova.servers.assert_status|server, status="ACTIVE"|Assert a server in special status.|
+|int32bit.system.exec|cmd|Run command with arguments and return its output as a byte string.|
 
 ### How to write new action ?
 

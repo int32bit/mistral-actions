@@ -42,3 +42,26 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         result = result.decode()
 
     print(result)
+
+
+def _convert_to_md_row(fields):
+    return '|' + '|'.join(fields) + '|'
+
+
+def dump_as_markdown_table(objs, fields, formatters={}):
+    print(_convert_to_md_row(fields))
+    print(_convert_to_md_row(['---'] * len(fields)))
+    for o in objs:
+        row = []
+        for field in fields:
+            if field in formatters:
+                row.append(formatters[field](o))
+            else:
+                data = o[field]
+                if data is None:
+                    data = '-'
+                data = data.split('\n')[0]
+                # '\r' would break the table, so remove it.
+                data = six.text_type(data).replace("\r", "")
+                row.append(data)
+        print(_convert_to_md_row(row))

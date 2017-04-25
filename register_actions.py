@@ -92,13 +92,8 @@ def dump_as_list():
 
 def dump_as_md_table():
     sorted_actions = sorted(extract_all_actions(), key=lambda a: a['name'])
-    print('| name | input | description |')
-    print('|----|----|----|')
-    for action in sorted_actions:
-        print("|%(name)s|(%(args)s)|%(desc)s|" %
-              {'name': action['name'],
-               'args': action['input_str'],
-               'desc': action['description'].split('\n')[0]})
+    fileds = ['name', 'input_str', 'description']
+    utils.dump_as_markdown_table(sorted_actions, fileds)
 
 
 def main():
@@ -112,10 +107,10 @@ def main():
 
     CONF(project='mistral')
     # CONF.command.func(config, CONF.command.name)
-    sync_db()
-    dump()
+    # sync_db()
+    # dump()
     # dump_as_list()
-    # dump_as_md_table()
+    dump_as_md_table()
 
 
 if __name__ == '__main__':
