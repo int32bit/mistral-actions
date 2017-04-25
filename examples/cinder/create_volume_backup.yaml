@@ -1,0 +1,29 @@
+---
+version: "2.0"
+
+create_volume_backup:
+  type: direct
+
+  input:
+    - volume_id
+    - backup_name
+    - force: True
+    - incremental: True
+    - description: "Created by mistral"
+
+  description: create a backup for a volume.
+
+  tasks:
+    create_backup:
+      description: create a backup for a volume
+      action: int32bit.cinder.backups.create volume_id=<% $.volume_id %> backup_name=<% $.backup_name %> force=<% $.force %> incremental=<% $.incremental %> description=<% $.description %>
+      publish:
+        backup_id: <% task(create_backup).result.id %>
+      on-success:
+        - wait_for_active
+
+    wait_for_active:
+      action: int32bit.cinder.backups.assert_status backup_id=<% $.backup_id %> status='available'
+      retry:
+        delay: 10
+        count: 30
