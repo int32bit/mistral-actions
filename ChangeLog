@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+* Add mistral-actions client
+* Update dump markdown table function
+* Add create cinder volume backup example
+* Add cinder backup actions
 * Add create volume snapshot example
 * Add create image example
 * Update action catalog
