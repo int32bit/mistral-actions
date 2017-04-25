@@ -1,0 +1,26 @@
+---
+version: "2.0"
+
+create_volume_snapshot:
+  type: direct
+
+  input:
+    - volume_id
+    - snapshot_name
+
+  description: create a snapshot for a volume.
+
+  tasks:
+    create_snapshot:
+      description: create a snapshot for a volume
+      action: cinder.volume_snapshots_create volume_id=<% $.volume_id %> name=<% $.snapshot_name %>
+      publish:
+        snapshot_id: <% task(create_snapshot).result.id %>
+      on-success:
+        - wait_for_active
+
+    wait_for_active:
+      action: int32bit.cinder.snapshots.assert_status snapshot_id=<% $.snapshot_id %> status='available'
+      retry:
+        delay: 10
+        count: 30
