@@ -1,0 +1,24 @@
+---
+version: "2.0"
+ 
+create_image:
+  type: direct
+ 
+  input:
+    - server_id
+    - image_name
+ 
+  description: create an image(snapshot) from a server.
+ 
+  tasks:
+    create_image:
+      description: create an image(snapshot) from a server.
+      action: nova.servers_create_image server=<% $.server_id %> image_name=<% $.image_name %>
+      on-success:
+        - wait_for_image
+ 
+    wait_for_image:
+      action: int32bit.glance.images.filter_by name=<% $.image_name %> status='active'
+      retry:
+        delay: 10
+        count: 30
