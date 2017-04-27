@@ -1,0 +1,26 @@
+---
+version: "2.0"
+
+stop_server:
+  type: direct
+
+  input:
+    - server_id
+
+  description: stop(shutdown) the specified server.
+
+  tasks:
+    stop_server:
+      description: stop(shutdown) the specified server.
+      action: nova.servers_stop server=<% $.server_id %>
+      wait-after: 2
+      on-error:
+        - noop
+      on-complete:
+        - wait_for_server
+
+    wait_for_server:
+      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='SHUTOFF'
+      retry:
+        delay: 5
+        count: 5

@@ -1,0 +1,26 @@
+---
+version: "2.0"
+
+start_server:
+  type: direct
+
+  input:
+    - server_id
+
+  description: start the specified server.
+
+  tasks:
+    start_server:
+      description: start the specified server.
+      action: nova.servers_start server=<% $.server_id %>
+      wait-after: 2
+      on-error:
+        - noop
+      on-complete:
+        - wait_for_server
+
+    wait_for_server:
+      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      retry:
+        delay: 5
+        count: 5
