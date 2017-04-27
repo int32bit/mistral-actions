@@ -1,6 +1,8 @@
 #!/bin/sh
 python setup.py install
-mistral-actions register --override
+
+echo
+mistral-actions register --override 2>/dev/null
 systemctl restart openstack-mistral-engine openstack-mistral-executor
 
 cat >action_catalog.md <<EOF

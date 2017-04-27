@@ -53,7 +53,7 @@ See "mistral-actions help COMMAND" for help on a specific command.
 
 #### 3. Discover New Actions
 
-```sh
+```
 $ mistral-actions discover
 Follow actions discovered:
 +-----------------------------------------+--------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
@@ -72,17 +72,17 @@ Follow actions discovered:
 
 #### 4. Register New Actions:
 
-```sh
+```
 $ mistral-actions register
 Follow actions have been registered:
-int32bit.system.exec
-int32bit.cinder.backups.assert_status
-int32bit.cinder.backups.create
-int32bit.cinder.volumes.assert_status
-int32bit.cinder.snapshots.assert_status
-int32bit.nova.servers.assert_status
-int32bit.glance.images.assert_status
-int32bit.glance.images.filter_by
+int32bit.system.exec(cmd): Run command with arguments and return its output as a byte string.
+int32bit.cinder.backups.assert_status(backup_id, status="available"): Assert a volume backup in special status.
+int32bit.cinder.backups.create(volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true): Creates a volume backup.
+int32bit.cinder.volumes.assert_status(volume_id, status="available"): Assert a volume in special status.
+int32bit.cinder.snapshots.assert_status(snapshot_id, status="available"): Assert a volume snapshot in special status.
+int32bit.nova.servers.assert_status(server, status="ACTIVE"): Assert a server in special status.
+int32bit.glance.images.assert_status(image_id, status="active"): Assert a image in special status.
+int32bit.glance.images.filter_by(**kwargs): List image filtered by id, name, status, etc.
 ```
 
 You need to restart mistral service before use new actions:

@@ -40,7 +40,10 @@ def do_register(args):
             actions_cli.register_all(discovered_actions)
             print("Follow actions have been registered: ")
             for action in discovered_actions:
-                print(action['name'])
+                print("%(name)s(%(args)s): %(description)s" %
+                      {'name':action['name'],
+                       'args': action['input_str'],
+                       'description': action['description'].split('\n')[0]})
         except Exception as ex:
             print("Fail to register actions: %s" % ex)
     else:
