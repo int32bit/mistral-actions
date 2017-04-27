@@ -4,6 +4,17 @@ Mistral is the OpenStack workflow service. This project aims to provide a mechan
 
 Mistral allow user write a new custom action, but must reinstall Mistral if it was installed in system(ref: https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html), it's hardly acceptable for production environment. This project aims to provide a simple tool to auto-discover and register new actions without effecting environment. This project also collect some extra useful actions and workflow examples which don't exist in standard action list.
 
+Features:
+
+* Automatic discovery installed actions in your system.
+* Register actions without any change to your Mistral Service, no need reinstall any service.
+* Provide a commandline tool to manage custom actions(list, register, unregister, clear, etc.).
+* Collect a lot of useful actions and workflow examples.
+
+Potential Improvements:
+
+* Add test.
+
 ### Quick Start
 
 For the impatient, assume you are working in mistral node:
@@ -16,7 +27,9 @@ mistral-actions register
 sudo systemctl restart openstack-mistral-engine openstack-mistral-executor
 ```
 
-#### 1. Install
+#### 1. Installation
+
+Please ensure you are in mistral controller node.
 
 ```
 $ git clone https://github.com/int32bit/mistral-actions.git
