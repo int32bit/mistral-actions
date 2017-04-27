@@ -78,7 +78,7 @@ Follow actions discovered:
 | int32bit.cinder.volumes.assert_status   | Assert a volume in special status.                                 | volume_id, status="available"                                                                            |
 | int32bit.glance.images.assert_status    | Assert a image in special status.                                  | image_id, status="active"                                                                                |
 | int32bit.glance.images.filter_by        | List image filtered by id, name, status, etc.                      | **kwargs                                                                                                 |
-| int32bit.nova.servers.assert_status     | Assert a server in special status.                                 | server, status="ACTIVE"                                                                                  |
+| int32bit.nova.servers.assert_status     | Assert a server in special status.                                 | server_id, status="ACTIVE"                                                                                  |
 | int32bit.system.exec                    | Run command with arguments and return its output as a byte string. | cmd                                                                                                      |
 +-----------------------------------------+--------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
 ```
@@ -93,7 +93,7 @@ int32bit.cinder.backups.assert_status(backup_id, status="available"): Assert a v
 int32bit.cinder.backups.create(volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true): Creates a volume backup.
 int32bit.cinder.volumes.assert_status(volume_id, status="available"): Assert a volume in special status.
 int32bit.cinder.snapshots.assert_status(snapshot_id, status="available"): Assert a volume snapshot in special status.
-int32bit.nova.servers.assert_status(server, status="ACTIVE"): Assert a server in special status.
+int32bit.nova.servers.assert_status(server_id, status="ACTIVE"): Assert a server in special status.
 int32bit.glance.images.assert_status(image_id, status="active"): Assert a image in special status.
 int32bit.glance.images.filter_by(**kwargs): List image filtered by id, name, status, etc.
 ```
@@ -117,7 +117,7 @@ $ mistral-actions action-list
 | int32bit.cinder.volumes.assert_status   | Assert a volume in special status.                                 | volume_id, status="available"                                                                            |
 | int32bit.glance.images.assert_status    | Assert a image in special status.                                  | image_id, status="active"                                                                                |
 | int32bit.glance.images.filter_by        | List image filtered by id, name, status, etc.                      | **kwargs                                                                                                 |
-| int32bit.nova.servers.assert_status     | Assert a server in special status.                                 | server, status="ACTIVE"                                                                                  |
+| int32bit.nova.servers.assert_status     | Assert a server in special status.                                 | server_id, status="ACTIVE"                                                                                  |
 | int32bit.system.exec                    | Run command with arguments and return its output as a byte string. | cmd                                                                                                      |
 +-----------------------------------------+--------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
 ```
@@ -125,22 +125,20 @@ $ mistral-actions action-list
 Once you succeed to register actions, you can use it in your workflow or directly run in place:
 
 ```sh
-mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"ef7ee146-1c27-448f-b948-d8821c59ec51"}'
+mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server_id":"ef7ee146-1c27-448f-b948-d8821c59ec51"}'
 ```
 
 ### Action Catalog
 
-|name|input_str|description|
 |---|---|---|
-|int32bit.cinder.backups.assert_status|backup_id, status="available"|Assert a volume backup in special status.|
-|int32bit.cinder.backups.create|volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true|Creates a volume backup.|
-|int32bit.cinder.snapshots.assert_status|snapshot_id, status="available"|Assert a volume snapshot in special status.|
-|int32bit.cinder.volumes.assert_status|volume_id, status="available"|Assert a volume in special status.|
-|int32bit.glance.images.assert_status|image_id, status="active"|Assert a image in special status.|
-|int32bit.glance.images.filter_by|**kwargs|List image filtered by id, name, status, etc.|
-|int32bit.nova.servers.assert_status|server, status="ACTIVE"|Assert a server in special status.|
-|int32bit.system.exec|cmd|Run command with arguments and return its output as a byte string.|
-
+|int32bit.cinder.backups.assert_status|Assert a volume backup in special status.|backup_id, status="available"|
+|int32bit.cinder.backups.create|Creates a volume backup.|volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true|
+|int32bit.cinder.snapshots.assert_status|Assert a volume snapshot in special status.|snapshot_id, status="available"|
+|int32bit.cinder.volumes.assert_status|Assert a volume in special status.|volume_id, status="available"|
+|int32bit.glance.images.assert_status|Assert a image in special status.|image_id, status="active"|
+|int32bit.glance.images.filter_by|List image filtered by id, name, status, etc.|**kwargs|
+|int32bit.nova.servers.assert_status|Assert a server in special status.|server_id, status="ACTIVE"|
+|int32bit.system.exec|Run command with arguments and return its output as a byte string.|cmd|
 Please see [Action Catalog](./action_catalog.md) to get all action list.
 
 ### How to write new action ?
@@ -159,13 +157,13 @@ class AssertStatus(base):
     """
     __export__ = True
 
-    def __init__(self, server, status='ACTIVE'):
+    def __init__(self, server_id, status='ACTIVE'):
         super(AssertStatus, self).__init__('nova')
-        self.server = server
+        self.server_id = server_id
         self.status = status
 
     def run(self):
-        server = self.client.servers.get(self.server)
+        server = self.client.servers.get(self.server_id)
         assert (server.status == self.status)
         return True
 ```
@@ -212,7 +210,7 @@ start_server:
         - wait_for_server
 
     wait_for_server:
-      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      action: int32bit.nova.servers.assert_status server_id=<% $.server_id %> status='ACTIVE'
       retry:
         delay: 5
         count: 5
@@ -253,7 +251,7 @@ start_server:
         - wait_for_server
 
     wait_for_server:
-      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      action: int32bit.nova.servers.assert_status server_id=<% $.server_id %> status='ACTIVE'
       retry:
         delay: 5
         count: 5

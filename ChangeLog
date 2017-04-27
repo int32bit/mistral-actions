@@ -1,7 +1,9 @@
 CHANGES
 =======
 
-* Update  action code demo in README
+* Use a common openstack base client
+* Fix pep8 format error
+* Update action code demo in README
 * Add features
 * Change register report format
 * Update action catalog

@@ -20,7 +20,7 @@ stop_server:
         - wait_for_server
 
     wait_for_server:
-      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='SHUTOFF'
+      action: int32bit.nova.servers.assert_status server_id=<% $.server_id %> status='SHUTOFF'
       retry:
         delay: 5
         count: 5

@@ -20,7 +20,7 @@ start_server:
         - wait_for_server
 
     wait_for_server:
-      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      action: int32bit.nova.servers.assert_status server_id=<% $.server_id %> status='ACTIVE'
       retry:
         delay: 5
         count: 5

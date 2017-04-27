@@ -9,12 +9,12 @@ class AssertStatus(base):
     """
     __export__ = True
 
-    def __init__(self, server, status='ACTIVE'):
+    def __init__(self, server_id, status='ACTIVE'):
         super(AssertStatus, self).__init__('nova')
-        self.server = server
+        self.server_id = server_id
         self.status = status
 
     def run(self):
-        server = self.client.servers.get(self.server)
+        server = self.client.servers.get(self.server_id)
         assert (server.status == self.status)
         return True
