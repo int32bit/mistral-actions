@@ -128,6 +128,8 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server":"e
 |int32bit.nova.servers.assert_status|server, status="ACTIVE"|Assert a server in special status.|
 |int32bit.system.exec|cmd|Run command with arguments and return its output as a byte string.|
 
+Please see [Action Catalog](./action_catalog.md) to get all action list.
+
 ### How to write new action ?
 
 Write a class inherited from mistral.actions.base.Action in `mistral_actions` directory:

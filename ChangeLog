@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+* Add workflow examples to README
+* Add start & stop server examples
+* Update README
+* Fix command options issues
 * Add mistral-actions client
 * Update dump markdown table function
 * Add create cinder volume backup example
