@@ -148,17 +148,26 @@ Please see [Action Catalog](./action_catalog.md) to get all action list.
 Write a class inherited from mistral.actions.base.Action in `mistral_actions` directory:
 
 ```python
-from mistral.actions import base
+from mistral_actions.nova.base import Base
 
-class RunnerAction(base.Action):
-    
-    def __init__(self, param):
-        # store the incoming params
-        self.param = param
+
+class AssertStatus(Base):
+    """Assert a server in special status.
+
+    :param server: the server to check.
+    :param status: (optional)expect status.
+    """
+    __export__ = True
+
+    def __init__(self, server, status='ACTIVE'):
+        super(AssertStatus, self).__init__()
+        self.server = server
+        self.status = status
 
     def run(self):
-        # return your results here
-        return {'status': 0}
+        server = self.client.servers.get(self.server)
+        assert (server.status == self.status)
+        return True
 ```
 
 You just need add a `__export__` attribute to tell us to publish the class, and you don't need change `setup.cfg`.
@@ -181,12 +190,32 @@ systemctl restart openstack-mistral-engine openstack-mistral-executor
 Now you can call the action example.runner
 
 ```yaml
-my_workflow:
+---
+version: "2.0"
+
+start_server:
+  type: direct
+
+  input:
+    - server_id
+
+  description: start the specified server.
+
   tasks:
-    my_action_task:
-      action: example.runner
-      input:
-        param: avalue_to_pass_in
+    start_server:
+      description: start the specified server.
+      action: nova.servers_start server=<% $.server_id %>
+      wait-after: 2
+      on-error:
+        - noop
+      on-complete:
+        - wait_for_server
+
+    wait_for_server:
+      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      retry:
+        delay: 5
+        count: 5
 ```
 
 ### Developers
