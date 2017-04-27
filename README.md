@@ -130,6 +130,7 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server_id"
 
 ### Action Catalog
 
+|name|description|input_str|
 |---|---|---|
 |int32bit.cinder.backups.assert_status|Assert a volume backup in special status.|backup_id, status="available"|
 |int32bit.cinder.backups.create|Creates a volume backup.|volume_id, backup_name, snapshot_id=null, description=null, container=null, incremental=true, force=true|
@@ -139,6 +140,7 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server_id"
 |int32bit.glance.images.filter_by|List image filtered by id, name, status, etc.|**kwargs|
 |int32bit.nova.servers.assert_status|Assert a server in special status.|server_id, status="ACTIVE"|
 |int32bit.system.exec|Run command with arguments and return its output as a byte string.|cmd|
+
 Please see [Action Catalog](./action_catalog.md) to get all action list.
 
 ### How to write new action ?
