@@ -1,7 +1,7 @@
-from mistral_actions.cinder.base import Base
+from mistral_actions.openstack import OpenstackBase as base
 
 
-class AssertStatus(Base):
+class AssertStatus(base):
     """Assert a volume in special status.
 
     :param volume_id: the volume to check.
@@ -10,7 +10,7 @@ class AssertStatus(Base):
     __export__ = True
 
     def __init__(self, volume_id, status='available'):
-        super(AssertStatus, self).__init__()
+        super(AssertStatus, self).__init__('cinder')
         self.volume_id = volume_id
         self.status = status
 

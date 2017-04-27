@@ -1,7 +1,7 @@
-from mistral_actions.nova.base import Base
+from mistral_actions.openstack import OpenstackBase as base
 
 
-class AssertStatus(Base):
+class AssertStatus(base):
     """Assert a server in special status.
 
     :param server: the server to check.
@@ -10,7 +10,7 @@ class AssertStatus(Base):
     __export__ = True
 
     def __init__(self, server, status='ACTIVE'):
-        super(AssertStatus, self).__init__()
+        super(AssertStatus, self).__init__('nova')
         self.server = server
         self.status = status
 

@@ -1,7 +1,7 @@
-from mistral_actions.glance.base import Base
+from mistral_actions.openstack import OpenstackBase as base
 
 
-class AssertStatus(Base):
+class AssertStatus(base):
     """Assert a image in special status.
 
     :param image_id: the uuid of image.
@@ -10,7 +10,7 @@ class AssertStatus(Base):
     __export__ = True
 
     def __init__(self, image_id, status='active'):
-        super(AssertStatus, self).__init__()
+        super(AssertStatus, self).__init__('glance')
         self.image_id = image_id
         self.status = status
 
@@ -20,7 +20,7 @@ class AssertStatus(Base):
         return True
 
 
-class FilterBy(Base):
+class FilterBy(base):
     """List image filtered by id, name, status, etc.
 
     :param kwargs: query filters.
@@ -31,7 +31,7 @@ class FilterBy(Base):
     ]
 
     def __init__(self, **kwargs):
-        super(FilterBy, self).__init__()
+        super(FilterBy, self).__init__('glance')
         self.filters = self._remove_invalid_fields(kwargs)
         self.kwargs = kwargs
 

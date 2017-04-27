@@ -1,7 +1,7 @@
-from mistral_actions.cinder.base import Base
+from mistral_actions.openstack import OpenstackBase as base
 
 
-class AssertStatus(Base):
+class AssertStatus(base):
     """Assert a volume backup in special status.
 
     :param backup_id: the volume backup to check.
@@ -10,7 +10,7 @@ class AssertStatus(Base):
     __export__ = True
 
     def __init__(self, backup_id, status='available'):
-        super(AssertStatus, self).__init__()
+        super(AssertStatus, self).__init__('cinder')
         self.backup_id = backup_id
         self.status = status
 
@@ -20,7 +20,7 @@ class AssertStatus(Base):
         return True
 
 
-class Create(Base):
+class Create(base):
     """Creates a volume backup.
 
     :param volume_id: The ID of the volume to backup.
@@ -41,7 +41,7 @@ class Create(Base):
                  container=None,
                  incremental=True,
                  force=True):
-        super(Create, self).__init__()
+        super(Create, self).__init__('cinder')
         self.volume_id = volume_id
         self.backup_name = backup_name
         self.snapshot_id = snapshot_id

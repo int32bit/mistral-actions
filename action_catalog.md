@@ -11,4 +11,4 @@
 |int32bit.nova.servers.assert_status|Assert a server in special status.|server, status="ACTIVE"|
 |int32bit.system.exec|Run command with arguments and return its output as a byte string.|cmd|
 
-Update at 2017-04-27 05:51:07 UTC
+Update at 2017-04-27 07:16:55 UTC
