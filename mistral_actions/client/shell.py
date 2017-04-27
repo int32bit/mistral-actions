@@ -18,19 +18,33 @@ def do_clear(args):
     help="Set true will override all actions exist in Mistral.")
 def do_register(args):
     """Register all actions to Mistral."""
+    override = args.override
+    try:
+        sys.argv.remove("--override")
+    except:
+        pass
     registered_actions = actions_cli.get_all_registered()
     discovered_actions = actions_cli.discover()
     registered_action_names = [a['name'] for a in registered_actions]
     discovered_action_names = [a['name'] for a in discovered_actions]
     intersection = set(registered_action_names) & set(discovered_action_names)
-    if args.override:
+    if override:
         for name in intersection:
             actions_cli.unregister(name)
     else:
         discovered_actions = filter(
             lambda a: a['name'] not in registered_action_names,
             discovered_actions)
-    actions_cli.register_all(discovered_actions)
+    if len(discovered_actions):
+        try:
+            actions_cli.register_all(discovered_actions)
+            print("Follow actions have been registered: ")
+            for action in discovered_actions:
+                print(action['name'])
+        except Exception as ex:
+            print("Fail to register actions: %s" % ex)
+    else:
+        print("No action need to register.")
 
 
 def do_discover(args):
@@ -49,15 +63,15 @@ def do_unregister(args):
     actions_cli.unregister(name)
 
 
-def do_md_dump(args):
-    """Dump all discovered actions to stdout."""
+def do_markdown_dump(args):
+    """Dump all discovered actions to stdout as markdown table."""
     sorted_actions = sorted(actions_cli.discover(), key=lambda a: a['name'])
     fileds = ['name', 'description', 'input_str']
     utils.dump_as_markdown_table(sorted_actions, fileds)
 
 
 def do_action_list(args):
-    """List all actions has been registered in Mistral."""
+    """List all actions have been registered in Mistral."""
     actions = actions_cli.get_all_registered()
     fileds = ['name', 'description', 'input_str']
     utils.print_list(actions, fileds, sortby_index=0)
