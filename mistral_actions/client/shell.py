@@ -21,7 +21,7 @@ def do_register(args):
     override = args.override
     try:
         sys.argv.remove("--override")
-    except:
+    except ValueError:
         pass
     registered_actions = actions_cli.get_all_registered()
     discovered_actions = actions_cli.discover()
@@ -41,7 +41,7 @@ def do_register(args):
             print("Follow actions have been registered: ")
             for action in discovered_actions:
                 print("%(name)s(%(args)s): %(description)s" %
-                      {'name':action['name'],
+                      {'name': action['name'],
                        'args': action['input_str'],
                        'description': action['description'].split('\n')[0]})
         except Exception as ex:
