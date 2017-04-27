@@ -182,6 +182,104 @@ contents of the CONTRIBUTING.rst.
 Any new code must follow the development guidelines detailed
 in the HACKING.rst file, and pass all unit tests.
 
+### Workflow Examples
+
+#### Start server
+
+```yaml
+---
+version: "2.0"
+
+start_server:
+  type: direct
+
+  input:
+    - server_id
+
+  description: start the specified server.
+
+  tasks:
+    start_server:
+      description: start the specified server.
+      action: nova.servers_start server=<% $.server_id %>
+      wait-after: 2
+      on-error:
+        - noop
+      on-complete:
+        - wait_for_server
+
+    wait_for_server:
+      action: int32bit.nova.servers.assert_status server=<% $.server_id %> status='ACTIVE'
+      retry:
+        delay: 5
+        count: 5
+```
+
+#### Create image from a server(snapshot)
+
+```yaml
+---
+version: "2.0"
+
+create_image:
+  type: direct
+
+  input:
+    - server_id
+    - image_name
+
+  description: create an image(snapshot) from a server.
+
+  tasks:
+    create_image:
+      description: create an image(snapshot) from a server.
+      action: nova.servers_create_image server=<% $.server_id %> image_name=<% $.image_name %>
+      on-success:
+        - wait_for_image
+
+    wait_for_image:
+      action: int32bit.glance.images.filter_by name=<% $.image_name %> status='active'
+      retry:
+        delay: 10
+        count: 30
+```
+
+#### Create volume backup
+
+```yaml
+---
+version: "2.0"
+
+create_volume_backup:
+  type: direct
+
+  input:
+    - volume_id
+    - backup_name
+    - force: True
+    - incremental: True
+    - description: "Created by mistral"
+
+  description: create a backup for a volume.
+
+  tasks:
+    create_backup:
+      description: create a backup for a volume
+      action: int32bit.cinder.backups.create volume_id=<% $.volume_id %> backup_name=<% $.backup_name %> force=<% $.force %> incremental=<% $.incremental %> description=<% $.description %>
+      publish:
+        backup_id: <% task(create_backup).result.id %>
+      on-success:
+        - wait_for_active
+
+    wait_for_active:
+      action: int32bit.cinder.backups.assert_status backup_id=<% $.backup_id %> status='available'
+      retry:
+        delay: 10
+        count: 30
+```
+
+For more workflow examples, see [examples](./examples).
+
 ### License
 
 MIT
