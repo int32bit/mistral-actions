@@ -1,25 +1,26 @@
 ## OpenStack Mistal Actions
 
-👉[中文](./README.zh.md)
+👉[English](./README.md)
 
-Mistral is the OpenStack workflow service. This project aims to provide a mechanism to define tasks and workflows without writing code, manage and execute them in the cloud environment.
+Mistral是Mirantis公司为Openstack开发的工作流组件，提供Workflow As a Service服务。其中最典型的应用为创建定时任务，比如定时磁盘备份、定时开关机等。应用场景包括任务计划服务Cloud Cron,任务调度Task Scheduling, 复杂的运行时间长的业务流程等。对应的是AWS的SWS(Simple Workflow Serivce)。其愿景是：
 
-Mistral allow user write a new custom action, but must reinstall Mistral if it was installed in system(ref: https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html), it's hardly acceptable for production environment. This project aims to provide a simple tool to auto-discover and register new actions without effecting environment. This project also collect some extra useful actions and workflow examples which don't exist in standard action list.
+>The project is to provide capability to define, execute and manage tasks and workflows without writing code.
 
-Features:
+虽然官方愿景是零代码实现任务管理和调度，但如果需要自定义action还是需要写代码的，实际上自己写action的可能性非常大，一方面因为官方提供的action存在不少问题，比如`nova.servers_find`这个action常常作为创建虚拟机的workflow实例，其中用了`id`过滤参数，事实上`nova.servers_find`并不支持`id`过滤，这是由nova API服务决定的。另一方面是常常满足不了我们的实际需求，比如一个应用场景是定时给用户创建磁盘增量备份，如果备份链超过某个长度，则创建一个新的备份链，这由`cinder.backups_create`action是难以实现的。
 
-* Automatic discovery installed actions in your system.
-* Register actions without any change to your Mistral Service, no need reinstall any service.
-* Provide a commandline tool to manage custom actions(list, register, unregister, clear, etc.).
-* Collect a lot of useful actions and workflow examples.
+可惜的是官方并没有提供灵活方便注册新action的方法，根据[官方开发文档](https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html)，创建新的action必须重新安装Mistral服务，这在生产环境是完全不能接受的。
 
-Potential Improvements:
+这个项目旨在提供一个非常简单易用的工具来管理Mistral自定义action，包含的特性如下：
 
-* Add test.
+* 支持自动发现已安装的actions，不需要修改任何配置项和entry point。
+* 支持自动注册actions，免重新安装和配置，不需要中止已运行的Mistral服务。
+* 提供简单的命令行工具管理action，支持列举、注册、注销、清空等操作。
+* 收集了一些常用的action和workflow。
 
-### Quick Start
 
-For the impatient, assume you are working in mistral node:
+### 快速入门
+
+如果你没有耐心读下去，这里提供一个一键脚本完成初始化工作，请确保你目前工作在mistral控制节点。
 
 ```sh
 git clone https://github.com/int32bit/mistral-actions.git
@@ -27,11 +28,14 @@ cd mistral-actions
 sudo pip install .
 mistral-actions register
 sudo systemctl restart openstack-mistral-engine openstack-mistral-executor
+mistral-actions action-list
 ```
 
-#### 1. Installation
+执行成功后会输出已注册的action列表。接下来是详细步骤。
 
-Please ensure you are in mistral controller node.
+#### 1. 安装
+
+该插件需要安装在所有的Mistral节点上，因此以下脚本需要在所有的Mistral节点执行：
 
 ```
 $ git clone https://github.com/int32bit/mistral-actions.git
@@ -45,7 +49,7 @@ Installing collected packages: mistral-actions
 Successfully installed mistral-actions-0.0.1.dev21
 ```
 
-Once you install sucessfully, you can use `mistral-actions` command to manage your custom actions, use `help` subcommand to get help message:
+安装完后，你可以使用`mistral-actions`命令行工具来管理action，使用`help`子命令查看帮助信息：
 
 ```
 $ mistral-actions help
@@ -66,7 +70,9 @@ Positional arguments:
 See "mistral-actions help COMMAND" for help on a specific command.
 ```
 
-#### 2. Discover New Actions
+#### 2. 自动发现
+
+运行`discover`子命令会自动发现系统已经安装的action：
 
 ```
 $ mistral-actions discover
@@ -85,7 +91,9 @@ Follow actions discovered:
 +-----------------------------------------+--------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
 ```
 
-#### 3. Register New Actions:
+#### 3. 注册
+
+前面自动发现了在系统上的所有action，如果检查没有问题后就可以执行注册了，注册使用`register`子命令：
 
 ```
 $ mistral-actions register
@@ -100,13 +108,15 @@ int32bit.glance.images.assert_status(image_id, status="active"): Assert a image 
 int32bit.glance.images.filter_by(**kwargs): List image filtered by id, name, status, etc.
 ```
 
-You need to restart mistral service before use new actions:
+**注:** 你可以使用`--override`参数强制覆盖系统已有的action。
+
+注册完成，需要重启所有的Mistral服务:
 
 ```bash
 systemctl restart openstack-mistral-{api,engine,executor}
 ```
 
-#### 4. List Registered Actions:
+#### 4. 查看已注册的action列表:
 
 ```
 $ mistral-actions action-list
@@ -124,13 +134,13 @@ $ mistral-actions action-list
 +-----------------------------------------+--------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
 ```
 
-Once you succeed to register actions, you can use it in your workflow or directly run in place:
+有输出结果看，action已经成功注册到Mistral中了，你可以在你的workflow使用或者直接运行action：
 
 ```sh
 mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server_id":"ef7ee146-1c27-448f-b948-d8821c59ec51"}'
 ```
 
-### Action Catalog
+### Action列表
 
 |name|description|input_str|
 |---|---|---|
@@ -143,11 +153,11 @@ mistral run-action mistral_actions.nova.servers.ServerAssertStatus '{"server_id"
 |int32bit.nova.servers.assert_status|Assert a server in special status.|server_id, status="ACTIVE"|
 |int32bit.system.exec|Run command with arguments and return its output as a byte string.|cmd|
 
-Please see [Action Catalog](./action_catalog.md) to get all action list.
+请访问[Action Catalog](./action_catalog.md)查看完整的action列表。
 
-### How to write new action ?
+### 如何写一个自己的action
 
-Write a class inherited from `mistral_actions.openstack.OpenstackBase` in `mistral_actions` directory:
+非常简单，你只需要写一个类继承自`mistral_actions.openstack.OpenstackBase`，并把你的模块放到`mistral_actions`目录即可，你需要修改任何配置文件，如下:
 
 ```python
 from mistral_actions.openstack import OpenstackBase as base
@@ -172,16 +182,16 @@ class AssertStatus(base):
         return True
 ```
 
-You just need add a `__export__` attribute to tell us to publish the class, and you don't need change `setup.cfg`.
+**注意：你需要添上`__export__` 属性标识它为一个action类。**
 
-You can use `format_code.sh` script to format your code to pep8 style. It's better to run `tox -e pep8` to ensure your code in pep8 style.
+你可以使用`format_code.sh`脚本来格式化你的代码保证它符合pep8标准。最后运行`tox -e pep8`保证最终代码符合pep8标准：
 
 ```
 ./format_code.sh
 tox -e pep8
 ```
 
-Register your actions and restart mistral services:
+重新注册服务并重启Mistral服务：
 
 ```
 mistral-actions discover
@@ -189,7 +199,7 @@ mistral-actions register
 systemctl restart openstack-mistral-engine openstack-mistral-executor
 ```
 
-Now you can call the action example.runner
+你现在就可以在你的workflow中使用你自己的action了:
 
 ```yaml
 ---
@@ -220,7 +230,7 @@ start_server:
         count: 5
 ```
 
-### Developers
+### 开发文档
 
 For information on how to contribute to this project, please see the
 contents of the CONTRIBUTING.rst.
@@ -228,9 +238,9 @@ contents of the CONTRIBUTING.rst.
 Any new code must follow the development guidelines detailed
 in the HACKING.rst file, and pass all unit tests.
 
-### Workflow Examples
+### Workflow实例
 
-#### Start server
+#### 虚拟机开机
 
 ```yaml
 ---
@@ -261,7 +271,7 @@ start_server:
         count: 5
 ```
 
-#### Create image from a server(snapshot)
+#### 创建虚拟机快照
 
 ```yaml
 ---
@@ -290,7 +300,7 @@ create_image:
         count: 30
 ```
 
-#### Create volume backup
+#### 创建磁盘备份
 
 ```yaml
 ---
@@ -324,17 +334,17 @@ create_volume_backup:
         count: 30
 ```
 
-For more workflow examples, see [examples](./examples).
+访问[examples](./examples)获取更多的workflow例子。
 
 ### License
 
 MIT
 
-### Contributors
+### 贡献列表
 
 * int32bit
 
-### References
+### 外部链接
 
 1. [Mistral’s developer documentation](https://docs.openstack.org/developer/mistral/)
 2. [How to write a Custom Action](https://docs.openstack.org/developer/mistral/developer/creating_custom_action.html)
