@@ -5,7 +5,7 @@ from oslo_config import cfg
 from oslo_utils import importutils
 
 from mistral.db.v2 import api as db_api
-from mistral.exceptions import NotFoundException
+from mistral.exceptions import DBEntityNotFoundError
 from mistral.services.action_manager import register_action_class
 from mistral.utils import inspect_utils as i_utils
 
@@ -53,7 +53,7 @@ def _extract_all_actions():
 def unregister(name):
     try:
         db_api.delete_action_definition(name)
-    except NotFoundException:
+    except DBEntityNotFoundError:
         print("Fail to remove action '%s', NOT FOUND!" % name)
 
 
@@ -64,7 +64,7 @@ def unregister_all():
         try:
             db_api.delete_action_definition(action['name'])
             print("Remove action '%s' successfully." % action['name'])
-        except NotFoundException:
+        except DBEntityNotFoundError:
             print("Fail to remove action '%s', NOT FOUND!" % action['name'])
 
 
