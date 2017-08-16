@@ -1,9 +1,13 @@
 CHANGES
 =======
 
+* Fix wrong exception and context to create\_client method
+* Add Chinese doc
+* Update README.md
+* Change parameter name server to server\_id
 * Use a common openstack base client
 * Fix pep8 format error
-* Update action code demo in README
+* Update  action code demo in README
 * Add features
 * Change register report format
 * Update action catalog
@@ -31,5 +35,5 @@ CHANGES
 * Add update script
 * Add actions register report
 * Add README doc
-* Add server_assert_status action to ensure server in special status
+* Add server\_assert\_status action to ensure server in special status
 * Initialise project skeleton

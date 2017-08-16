@@ -16,6 +16,10 @@ CONF = cfg.CONF
 ROOT_NAMESPACE = 'int32bit'
 
 
+class NotFoundException(Exception):
+    pass
+
+
 def _extract_actions_from_module(module):
     action_list = []
     for member in inspect.getmembers(module):

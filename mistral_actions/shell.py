@@ -25,10 +25,10 @@ class MistralActionsClientArgumentParser(argparse.ArgumentParser):
         choose_from = ' (choose from'
         progparts = self.prog.partition(' ')
         self.exit(2, ("error: %(errmsg)s\nTry '%(mainp)s help %(subp)s'"
-                      " for more information.\n") %
-                  {'errmsg': message.split(choose_from)[0],
-                   'mainp': progparts[0],
-                   'subp': progparts[2]})
+                      " for more information.\n") % {
+                          'errmsg': message.split(choose_from)[0],
+                          'mainp': progparts[0],
+                          'subp': progparts[2]})
 
     def _get_option_tuples(self, option_string):
         """returns (action, option, value) candidates for an option prefix
