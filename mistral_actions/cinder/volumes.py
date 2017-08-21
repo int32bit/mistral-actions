@@ -1,3 +1,4 @@
+from mistral_actions.exceptions import NotExpectedStatusException
 from mistral_actions.openstack import OpenstackBase as base
 
 
@@ -16,5 +17,8 @@ class AssertStatus(base):
 
     def run(self):
         volume = self.client.volumes.get(self.volume_id)
-        assert (volume.status == self.status)
+        if volume.status != self.status:
+            raise NotExpectedStatusException(
+                "volume status is '%s', expect '%s'" % (volume.status,
+                                                        self.status))
         return True

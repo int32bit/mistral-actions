@@ -1,3 +1,4 @@
+from mistral_actions.exceptions import NotExpectedStatusException
 from mistral_actions.openstack import OpenstackBase as base
 
 
@@ -16,7 +17,10 @@ class AssertStatus(base):
 
     def run(self):
         image = self.client.images.get(self.image_id)
-        assert (image.status == self.status)
+        if image.status != self.status:
+            raise NotExpectedStatusException(
+                "image status is '%s', expect '%s'" % (image.status,
+                                                       self.status))
         return True
 
 
