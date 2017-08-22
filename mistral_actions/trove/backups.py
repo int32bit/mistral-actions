@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from mistral_actions.exceptions import InvalidStatusException
 from mistral_actions.exceptions import NotExpectedStatusException
 from mistral_actions.openstack import OpenstackBase as base
 
@@ -8,15 +9,15 @@ DESC_PREFIX = 'Created by Mistral'
 
 
 class AssertStatus(base):
-    """Assert a volume backup in special status.
+    """Assert a trove backup in special status.
 
-    :param backup_id: the volume backup to check.
+    :param backup_id: the trove backup to check.
     :param status: (optional)expect status.
     """
     __export__ = True
 
-    def __init__(self, backup_id, status='available'):
-        super(AssertStatus, self).__init__('cinder')
+    def __init__(self, backup_id, status='COMPLETED'):
+        super(AssertStatus, self).__init__('trove')
         self.backup_id = backup_id
         self.status = status
 
@@ -30,16 +31,15 @@ class AssertStatus(base):
 
 
 class CreateBackup(base):
-    """Creates a volume backup.
+    """Creates a trove backup.
 
-    :param volume_id: The ID of the volume to backup.
-    :rtype: :class:`VolumeBackup`
+    :param instance_id: The ID of the instance to backup.
     """
     __export__ = True
 
-    def __init__(self, volume_id):
-        super(CreateBackup, self).__init__('cinder')
-        self.volume_id = volume_id
+    def __init__(self, instance_id):
+        super(CreateBackup, self).__init__('trove')
+        self.instance_id = instance_id
 
     def _choose_parent_backup(self, chains):
         chains = sorted(chains, key=lambda c: len(c))
@@ -53,39 +53,38 @@ class CreateBackup(base):
         return None
 
     def _create_backup(self,
-                       volume_id,
+                       instance_id,
                        name,
                        description,
                        incremental=False,
                        parent_id=None):
-        body = {
-            'backup': {
-                'volume_id': volume_id,
-                'name': name,
-                'description': description,
-                'incremental': incremental,
-                'force': True,
-                'backup_id': parent_id,
-            }
-        }
-        return self.client.backups._create('/backups', body, 'backup')
+        return self.client.backups.create(
+            name,
+            instance_id,
+            description=description,
+            parent_id=parent_id,
+            incremental=incremental)
 
     def run(self):
         time = datetime.strftime(datetime.utcnow(), "%Y_%m_%d_%H_%M_%S")
-        backups = _get_backups_by_volume(self.client, self.volume_id)
+        backups = _get_backups_by_instance(self.client, self.instance_id)
         chains = _get_backups_chains(backups)
         parent = self._choose_parent_backup(chains)
-        volume = self.client.volumes.get(self.volume_id)
-        name = "%(volume_name)s_snap_%(time)s" % {
-            'volume_name': volume.name,
+        instance = self.client.instances.get(self.instance_id)
+        if instance.status != 'ACTIVE':
+            raise InvalidStatusException(
+                ("The instance status should be 'ACTIVE', "
+                 "but current status is '%s'") % instance.status)
+        name = "%(instance_name)s_snap_%(time)s" % {
+            'instance_name': instance.name,
             'time': time
         }
         description = "%s at %s" % (DESC_PREFIX, datetime.utcnow())
         if parent:
-            backup = self._create_backup(self.volume_id, name, description,
+            backup = self._create_backup(self.instance_id, name, description,
                                          True, parent.id)
         else:
-            backup = self._create_backup(self.volume_id, name, description)
+            backup = self._create_backup(self.instance_id, name, description)
         return backup
 
 
@@ -109,7 +108,11 @@ def _get_backups_chains(backups):
     return chains
 
 
-def _get_backups_by_volume(client, volume_id):
-    search_opts = {'volume_id': volume_id}
-    backups = client.backups.list(search_opts=search_opts)
-    return backups
+def _get_backups_by_instance(client, instance_id):
+    resultset = []
+    # Trove doesn't support to get backup list by instance
+    backups = client.backups.list()
+    for backup in backups:
+        if backup.instance_id == instance_id:
+            resultset.append(backup)
+    return resultset

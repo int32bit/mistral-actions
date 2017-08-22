@@ -13,5 +13,7 @@
 |int32bit.nova.servers.assert_status|Assert a server in special status.|server_id, status="ACTIVE"|
 |int32bit.nova.servers.get_status|Get a server status.|server_id|
 |int32bit.system.exec|Run command with arguments and return its output as a byte string.|cmd|
+|int32bit.trove.backups.assert_status|Assert a trove backup in special status.|backup_id, status="COMPLETED"|
+|int32bit.trove.backups.create_backup|Creates a trove backup.|instance_id|
 
-Update at 2017-08-16 09:44:04 UTC
+Update at 2017-08-22 02:23:36 UTC

@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Replace assert to exception
+* Add more actions
 * Fix wrong exception and context to create\_client method
 * Add Chinese doc
 * Update README.md
